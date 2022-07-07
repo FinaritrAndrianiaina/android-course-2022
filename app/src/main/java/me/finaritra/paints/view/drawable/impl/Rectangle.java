@@ -26,4 +26,9 @@ public class Rectangle extends Drawable {
     public Rectangle clone() {
         return new Rectangle(this.getStartPoint(),this.getStopPoint());
     }
+
+    @Override
+    public Rectangle newInstance() {
+        return new Rectangle();
+    }
 }

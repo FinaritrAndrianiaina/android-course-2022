@@ -3,6 +3,7 @@ package me.finaritra.paints.view.drawable;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Bundle;
 
 import me.finaritra.paints.view.PointCoordinate;
 
@@ -50,5 +51,6 @@ public abstract class Drawable {
     };
 
     public abstract Drawable clone();
+    public abstract Drawable newInstance();
 
 }

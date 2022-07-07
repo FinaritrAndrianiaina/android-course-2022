@@ -34,4 +34,9 @@ public class Line extends Drawable {
     public Line clone() {
         return new Line(this.getStartPoint(),this.getStopPoint());
     }
+
+    @Override
+    public Drawable newInstance() {
+        return new Line();
+    }
 }

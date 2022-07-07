@@ -4,9 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
@@ -17,7 +14,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Random;
 
 import me.finaritra.paints.view.drawable.Drawable;
@@ -28,21 +25,19 @@ public class DrawZoneView extends View {
 
     int touchX = -1;
     int touchY = -1;
-    List<Pair<Drawable,Paint>> drawableList = new ArrayList<>();
-    Drawable tmpDrawable = new Line();
+    LinkedList<Pair<Drawable, Paint>> drawableList = new LinkedList<>();
+    public static Drawable tmpDrawable = new Line();
+    public Paint tmpPaint = new Paint();
 
-    Paint tmpPaint = new Paint();
     String CLASS_NAME = this.getClass().getName();
-    boolean toggle = false;
     int[] colorList = new int[]{Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.GRAY, Color.CYAN};
+    GestureDetector gestureDetector;
+    DrawZoneView self;
 
 
     public DrawZoneView(Context context) {
         super(context);
         //rectList.add(new Rect(0, 0, 500, 500));
-        tmpPaint.setColor(Color.BLACK);
-        tmpPaint.setStyle(Paint.Style.STROKE);
-        tmpPaint.setStrokeWidth(5);
     }
 
     public DrawZoneView(Context context, @Nullable AttributeSet attrs) {
@@ -50,6 +45,19 @@ public class DrawZoneView extends View {
         tmpPaint.setColor(Color.BLACK);
         tmpPaint.setStyle(Paint.Style.STROKE);
         tmpPaint.setStrokeWidth(5);
+        self = this;
+        gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener() {
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                Log.d(CLASS_NAME, "DOUBLE TAP");
+                if(!drawableList.isEmpty()) {
+                    drawableList.pop();
+                }
+                self.invalidate();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -70,6 +78,7 @@ public class DrawZoneView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         touchY = (int) event.getY();
         touchX = (int) event.getX();
+        gestureDetector.onTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 tmpPaint.setColor(this.getRandomColor());
@@ -81,17 +90,13 @@ public class DrawZoneView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(CLASS_NAME, "ACTION WAS UP");
-                drawableList.add( new Pair<>(tmpDrawable.clone(),new Paint(tmpPaint)));
-                toggle= !toggle;
-                if(toggle) {
-                    tmpDrawable = new Circle();
-                } else {
-                    tmpDrawable = new Line();
-                }
+                drawableList.push(new Pair<>(tmpDrawable.clone(),new Paint(tmpPaint)));
+                tmpDrawable = tmpDrawable.newInstance();
                 break;
         }
         return true;
     }
+
 
 
 }

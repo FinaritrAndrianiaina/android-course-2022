@@ -29,4 +29,9 @@ public class Circle extends Drawable {
     public Circle clone() {
         return new Circle(this.getStartPoint(),this.getStopPoint());
     }
+
+    @Override
+    public Drawable newInstance() {
+        return new Circle();
+    }
 }
