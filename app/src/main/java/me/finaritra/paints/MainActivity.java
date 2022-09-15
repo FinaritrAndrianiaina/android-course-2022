@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable runnableUndo;
     private Runnable runnableRedo;
     private final long longClickDelay = 2000L;
-    private final long updateDelay = 1000L;
+    private final long updateDelay = 300L;
 
     final Logger Log = Logger.getLogger(this.getClass().getName());
     ImageButton saveButton;
@@ -224,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
     View.OnTouchListener undoClickListner = (View v, MotionEvent event) -> {
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             isPressedUndo = true;
+            drawZoneView.undo();
             handler.postDelayed(runnableUndo, longClickDelay);
         } else if (MotionEvent.ACTION_UP == event.getAction()) {
             isPressedUndo = false;
@@ -234,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
     View.OnTouchListener redoClickListner = (View v, MotionEvent event) -> {
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             isPressedRedo = true;
+            drawZoneView.redo();
             handler.postDelayed(runnableRedo, longClickDelay);
         } else if (MotionEvent.ACTION_UP == event.getAction()) {
             isPressedRedo = false;

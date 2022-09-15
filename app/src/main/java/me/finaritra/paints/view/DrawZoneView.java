@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -34,7 +33,6 @@ public class DrawZoneView extends View {
 
     String CLASS_NAME = this.getClass().getName();
     int[] colorList = new int[]{Color.BLACK, Color.BLUE, Color.RED, Color.GREEN, Color.GRAY, Color.CYAN};
-    GestureDetector gestureDetector;
     DrawZoneView self;
 
 
@@ -49,18 +47,6 @@ public class DrawZoneView extends View {
         tmpPaint.setStyle(Paint.Style.STROKE);
         tmpPaint.setStrokeWidth(5);
         self = this;
-        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-
-            @Override
-            public boolean onDoubleTapEvent(MotionEvent e) {
-                Log.d(CLASS_NAME, "DOUBLE TAP");
-                if (!drawableList.isEmpty()) {
-                    drawableList.pop();
-                }
-                self.invalidate();
-                return true;
-            }
-        });
     }
 
     @Override
@@ -81,7 +67,6 @@ public class DrawZoneView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         touchY = (int) event.getY();
         touchX = (int) event.getX();
-        gestureDetector.onTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 tmpDrawable.setStartPoint(touchX, touchY);
