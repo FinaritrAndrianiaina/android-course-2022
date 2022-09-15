@@ -49,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
     ImageButton eraserBtn;
     ImageButton cleanBtn;
     Slider slider;
+    AlertDialog dialog;
+    boolean isPressedUndo = false;
+    boolean isPressedRedo = false;
+    private final android.os.Handler handler = new Handler();
+    private Runnable runnableUndo;
+    private Runnable runnableRedo;
+    private final long longClickDelay = 2000L;
+    private final long updateDelay = 1000L;
 
     final Logger Log = Logger.getLogger(this.getClass().getName());
     ImageButton saveButton;
@@ -148,8 +156,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    AlertDialog dialog;
-
 
     private void buildDialogClear() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -213,17 +219,9 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    boolean isPressedUndo = false;
-    boolean isPressedRedo = false;
-    private final android.os.Handler handler = new Handler();
-    private Runnable runnableUndo;
-    private Runnable runnableRedo;
-    private final long longClickDelay = 10000L;
-    private final long updateDelay = 500L;
     View.OnClickListener colorPickerListener = (_v) -> openColorPickerDialogue();
     View.OnClickListener saveClickListner = (_v) -> this.saveToFileRequest();
     View.OnTouchListener undoClickListner = (View v, MotionEvent event) -> {
-        drawZoneView.undo();
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             isPressedUndo = true;
             handler.postDelayed(runnableUndo, longClickDelay);
@@ -234,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     };
     View.OnTouchListener redoClickListner = (View v, MotionEvent event) -> {
-        drawZoneView.redo();
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             isPressedRedo = true;
             handler.postDelayed(runnableRedo, longClickDelay);
