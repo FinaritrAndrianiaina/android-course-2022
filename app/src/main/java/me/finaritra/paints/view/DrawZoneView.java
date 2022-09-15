@@ -14,18 +14,21 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Random;
 
 import me.finaritra.paints.view.drawable.Drawable;
 import me.finaritra.paints.view.drawable.impl.Circle;
+import me.finaritra.paints.view.drawable.impl.EraserPoint;
 import me.finaritra.paints.view.drawable.impl.Line;
+import me.finaritra.paints.view.drawable.impl.Point;
 
 public class DrawZoneView extends View {
 
     int touchX = -1;
     int touchY = -1;
-    LinkedList<Pair<Drawable, Paint>> drawableList = new LinkedList<>();
+    public LinkedList<Pair<Drawable, Paint>> drawableList = new LinkedList<>();
     public static Drawable tmpDrawable = new Line();
     public Paint tmpPaint = new Paint();
 
@@ -46,12 +49,12 @@ public class DrawZoneView extends View {
         tmpPaint.setStyle(Paint.Style.STROKE);
         tmpPaint.setStrokeWidth(5);
         self = this;
-        gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
 
             @Override
             public boolean onDoubleTapEvent(MotionEvent e) {
                 Log.d(CLASS_NAME, "DOUBLE TAP");
-                if(!drawableList.isEmpty()) {
+                if (!drawableList.isEmpty()) {
                     drawableList.pop();
                 }
                 self.invalidate();
@@ -63,10 +66,10 @@ public class DrawZoneView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        tmpDrawable.drawToCanvas(canvas,tmpPaint);
         for (Pair<Drawable, Paint> drawablePair : drawableList) {
             drawablePair.first.drawToCanvas(canvas, drawablePair.second);
         }
+        tmpDrawable.drawToCanvas(canvas, tmpPaint);
     }
 
     public int getRandomColor() {
@@ -81,22 +84,51 @@ public class DrawZoneView extends View {
         gestureDetector.onTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                tmpPaint.setColor(this.getRandomColor());
-                tmpDrawable.setStartPoint(touchX,touchY);
-                tmpDrawable.setStopPoint(touchX,touchY);
+                tmpDrawable.setStartPoint(touchX, touchY);
+                tmpDrawable.setStopPoint(touchX, touchY);
+                if ((tmpDrawable instanceof Point) || (tmpDrawable instanceof EraserPoint)) {
+                    drawableList.add(new Pair<>(tmpDrawable.clone(), new Paint(tmpPaint)));
+                    tmpDrawable = tmpDrawable.newInstance();
+                    this.invalidate();
+                    break;
+                }
             case MotionEvent.ACTION_MOVE:
-                tmpDrawable.setStopPoint(touchX,touchY);
+                if (!((tmpDrawable instanceof Point) || (tmpDrawable instanceof EraserPoint))) {
+                    tmpDrawable.setStopPoint(touchX, touchY);
+                } else {
+                    tmpDrawable.setStartPoint(touchX, touchY);
+                    drawableList.add(new Pair<>(tmpDrawable.clone(), new Paint(tmpPaint)));
+                    tmpDrawable = tmpDrawable.newInstance();
+                }
                 this.invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d(CLASS_NAME, "ACTION WAS UP");
-                drawableList.push(new Pair<>(tmpDrawable.clone(),new Paint(tmpPaint)));
+                drawableList.add(new Pair<>(tmpDrawable.clone(), new Paint(tmpPaint)));
                 tmpDrawable = tmpDrawable.newInstance();
                 break;
         }
         return true;
     }
 
+    LinkedList<Pair<Drawable, Paint>> redoList = new LinkedList<>();
 
+    public void undo() {
+        if (this.drawableList.size() > 0) {
+            redoList.add(this.drawableList.removeLast());
+            this.invalidate();
+        }
+    }
 
+    public void redo() {
+        if (redoList.size() > 0) {
+            drawableList.add(this.redoList.removeLast());
+            this.invalidate();
+        }
+    }
+
+    public void clean() {
+        drawableList = new LinkedList<>();
+        this.invalidate();
+    }
 }

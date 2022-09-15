@@ -47,7 +47,6 @@ public abstract class Drawable {
 
     public void drawToCanvas(Canvas canvas, Paint paint){
         canvas.drawPoint(startPoint.getX(),startPoint.getY(),paint);
-        canvas.drawPoint(stopPoint.getX(),stopPoint.getY(),paint);
     };
 
     public abstract Drawable clone();
