@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,12 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private Runnable runnableUndo;
     private Runnable runnableRedo;
     private final long longClickDelay = 2000L;
-    private final long updateDelay = 300L;
+    private final long updateDelay = 10L;
 
     final Logger Log = Logger.getLogger(this.getClass().getName());
     ImageButton saveButton;
     TextView textView;
-    float strokeWidth = 10;
+    float strokeWidth = 50;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -135,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_DIRECTORY) {
             try {
-                saveToFile(data.getData());
+                if(data != null && data.getData() != null) {
+                    saveToFile(data.getData());
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

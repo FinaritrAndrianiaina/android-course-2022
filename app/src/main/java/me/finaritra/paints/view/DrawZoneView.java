@@ -73,7 +73,6 @@ public class DrawZoneView extends View {
                 tmpDrawable.setStopPoint(touchX, touchY);
                 if ((tmpDrawable instanceof Point) || (tmpDrawable instanceof EraserPoint)) {
                     drawableList.add(new Pair<>(tmpDrawable.clone(), new Paint(tmpPaint)));
-                    tmpDrawable = tmpDrawable.newInstance();
                     this.invalidate();
                     break;
                 }
@@ -114,6 +113,7 @@ public class DrawZoneView extends View {
 
     public void clean() {
         drawableList = new LinkedList<>();
+        tmpDrawable = new Line();
         this.invalidate();
     }
 }
